@@ -1,7 +1,9 @@
 <template>
-  <div class="flex min-h-screen flex-col">
+  <div class="min-h-screen">
     <Header></Header>
-    <slot />
+    <main class="min-h-[calc(100vh-5rem)] pt-10">
+      <slot />
+    </main>
   </div>
 </template>
 
