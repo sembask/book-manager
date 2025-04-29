@@ -15,7 +15,7 @@ Aplicação web para gerenciar leituras de livros, desenvolvida com Nuxt 3, Tail
 
 1. Clone o repositório
    git clone https://github.com/sembask/book-manager.git
-   cd seu-repositorio
+   cd book-manager
 
 2. Instale as dependências
    npm install
