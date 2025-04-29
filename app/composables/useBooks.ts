@@ -50,9 +50,33 @@ export const useBooks = () => {
   }
 
   async function registerBooks(book: BookUser) {
-    // useBooks.value.push(book);
-    localStorage.setItem("savedBooks", JSON.stringify(book));
+    const saved = localStorage.getItem("savedBooks");
+
+    let books: BookUser[] = [];
+
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          books = parsed as BookUser[];
+        }
+      } catch (error) {
+        console.error("Erro ao carregar livros antigos:", error);
+      }
+    }
+
+    books.push(book);
+
+    localStorage.setItem("savedBooks", JSON.stringify(books));
     router.push("/");
+  }
+
+  async function deleteBooks(book: BookUser[]) {
+    try {
+      localStorage.setItem("savedBooks", JSON.stringify(book));
+    } catch (error) {
+      console.error("Erro ao deletar o livro:", error);
+    }
   }
 
   return {
@@ -60,5 +84,6 @@ export const useBooks = () => {
     isLoading,
     fetchBooks,
     registerBooks,
+    deleteBooks,
   } as const;
 };

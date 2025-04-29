@@ -1,19 +1,6 @@
 <script lang="ts" setup>
-import { ref, watch } from "vue";
-import { useBooks } from "~/composables/useBooks";
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardTitle,
-} from "~/components/ui/card";
-
 import type { Book } from "~/models/book";
-import { useRouter } from "vue-router";
 
-const router = useRouter();
 const searchQuery = ref("");
 const onRegister = ref(false);
 const bookSelected = ref<Book | null>(null);
@@ -28,6 +15,11 @@ function selectBook(p: Book) {
 function handleManualSearch(searchQuery: string) {
   clearTimeout(debounceTimer);
   fetchBooks(searchQuery);
+}
+
+function handleCancel() {
+  onRegister.value = false;
+  bookSelected.value = null;
 }
 
 let debounceTimer: ReturnType<typeof setTimeout>;
@@ -47,6 +39,7 @@ watch(searchQuery, (newValue) => {
 
 <template>
   <div class="container mx-auto">
+    <h1 class="text-2xl font-medium mb-6">Adicionar livro</h1>
     <div v-if="!onRegister" class="flex gap-4 relative">
       <Icon
         name="lucide:search"
@@ -73,38 +66,13 @@ watch(searchQuery, (newValue) => {
       <span v-if="books.length > 0" class="block text-lg font-medium mb-6"
         >Livros encontrados</span
       >
-
-      <Card
-        v-for="book in books"
-        @click="selectBook(book)"
-        :key="book.apiBookId"
-        class="mb-6 cursor-pointer hover:bg-accent transition-colors"
-      >
-        <CardContent class="flex gap-4 items-center">
-          <div class="shrink-0">
-            <img
-              :src="book.thumbnail"
-              alt="Capa do Livro"
-              v-if="book.thumbnail"
-              width="60"
-              height="90"
-              class="object-cover rounded-sm w-24"
-            />
-          </div>
-          <div class="flex flex-col">
-            <CardTitle> {{ book.title }} </CardTitle>
-            <CardDescription>{{ book.authors.join(", ") }}</CardDescription>
-            <p v-if="book.pageCount">{{ book.pageCount }} páginas</p>
-            <p v-else>número de páginas idenfinido</p>
-          </div>
-        </CardContent>
-      </Card>
+      <BookList :books="books" :onSelect="selectBook" />
     </div>
     <div v-if="onRegister && bookSelected">
       <BookFormRegister
         :book="bookSelected"
         :onSave="registerBooks"
-        :onCancel="() => router.push('/')"
+        :onCancel="handleCancel"
       >
       </BookFormRegister>
     </div>
