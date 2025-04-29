@@ -1,10 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
 import type { BookUser } from "@/models/bookUser";
 import type { Book } from "@/models/book";
 import { bookUserSchema } from "@/schemas/bookUserSchema";
@@ -25,42 +20,54 @@ const formData = ref<BookUser>({
   review: "",
 });
 
+const formErrors = ref<Record<string, string>>({});
+
+const startedAtInput = ref(
+  formData.value.startedAt.toISOString().substring(0, 10)
+);
+const finishedAtInput = ref(
+  formData.value.finishedAt?.toISOString().substring(0, 10) || ""
+);
+
+watch(startedAtInput, (val) => {
+  formData.value.startedAt = new Date(val);
+  formErrors.value.startedAt = "";
+});
+watch(finishedAtInput, (val) => {
+  formData.value.finishedAt = val ? new Date(val) : undefined;
+  formErrors.value.finishedAt = "";
+});
+
 function handleRatingChange(rating: number) {
-  formData.value = { ...formData.value, rating };
+  formData.value.rating = rating;
+  if (rating >= 1) formErrors.value.rating = "";
 }
 
-function handleSubmit(event: Event) {
-  event.preventDefault();
+function handleSubmit(e: Event) {
+  e.preventDefault();
 
   const result = bookUserSchema.safeParse(formData.value);
-
   if (!result.success) {
-    console.error(result.error.format());
+    const f = result.error.format();
+    formErrors.value = {
+      startedAt: f.startedAt?._errors?.[0] || "",
+      finishedAt: f.finishedAt?._errors?.[0] || "",
+      review: f.review?._errors?.[0] || "",
+      rating: f.rating?._errors?.[0] || "",
+    };
     return;
   }
 
+  formErrors.value = {};
   props.onSave(result.data);
 }
 
-const startedAtString = ref(
-  formData.value.startedAt
-    ? formData.value.startedAt.toISOString().substring(0, 10)
-    : ""
+watch(
+  () => formData.value.review,
+  (val) => {
+    if (val?.length >= 5) formErrors.value.review = "";
+  }
 );
-
-watch(startedAtString, (newValue) => {
-  formData.value.startedAt = new Date(newValue || Date.now());
-});
-
-const finishedAtString = ref(
-  formData.value.finishedAt
-    ? formData.value.finishedAt.toISOString().substring(0, 10)
-    : ""
-);
-
-watch(finishedAtString, (newValue) => {
-  formData.value.finishedAt = newValue ? new Date(newValue) : undefined;
-});
 </script>
 
 <template>
@@ -99,8 +106,21 @@ watch(finishedAtString, (newValue) => {
               id="startedAt"
               name="startedAt"
               type="date"
-              v-model="startedAtString"
+              v-model="startedAtInput"
             ></Input>
+            <Alert
+              v-if="formErrors.startedAt"
+              variant="destructive"
+              class="mt-2"
+            >
+              <Icon
+                name="lucide:alert-circle"
+                class="h-5 w-5 mt-1 text-destructive"
+              />
+              <AlertDescription class="text-sm text-destructive">{{
+                formErrors.startedAt
+              }}</AlertDescription>
+            </Alert>
           </div>
 
           <div class="space-y-2">
@@ -109,8 +129,21 @@ watch(finishedAtString, (newValue) => {
               id="finishedAt"
               name="finishedAt"
               type="date"
-              v-model="finishedAtString"
+              v-model="finishedAtInput"
             ></Input>
+            <Alert
+              v-if="formErrors.finishedAt"
+              variant="destructive"
+              class="mt-2 flex items-start gap-2 p-3"
+            >
+              <Icon
+                name="lucide:alert-circle"
+                class="h-5 w-5 mt-1 text-destructive"
+              />
+              <AlertDescription class="text-sm text-destructive">
+                {{ formErrors.finishedAt }}
+              </AlertDescription>
+            </Alert>
           </div>
         </div>
 
@@ -136,6 +169,19 @@ watch(finishedAtString, (newValue) => {
                 "
               />
             </Button>
+            <Alert
+              v-if="formErrors.rating"
+              variant="destructive"
+              class="mt-2 flex items-start gap-2 p-3"
+            >
+              <Icon
+                name="lucide:circle-alert"
+                class="h-5 w-5 mt-1 text-destructive"
+              />
+              <AlertDescription class="text-sm text-destructive">{{
+                formErrors.rating
+              }}</AlertDescription>
+            </Alert>
           </div>
         </div>
 
@@ -148,6 +194,19 @@ watch(finishedAtString, (newValue) => {
             rows="4"
             v-model="formData.review"
           />
+          <Alert
+            v-if="formErrors.review"
+            variant="destructive"
+            class="mt-2 flex items-start gap-2 p-3"
+          >
+            <Icon
+              name="lucide:circle-alert"
+              class="h-5 w-5 mt-1 text-destructive"
+            />
+            <AlertDescription class="text-sm text-destructive">{{
+              formErrors.review
+            }}</AlertDescription>
+          </Alert>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
