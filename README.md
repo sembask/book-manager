@@ -1,75 +1,39 @@
-# Nuxt Minimal Starter
+# Book Manager
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Aplicação web para gerenciar leituras de livros, desenvolvida com Nuxt 3, TailwindCSS, ShadCN UI e Zod. Permite adicionar, listar, avaliar e excluir livros, com persistência local via `localStorage`.
 
-## Setup
+## Tecnologias Utilizadas
 
-Make sure to install dependencies:
+- Nuxt 3
+- TailwindCSS 4
+- ShadCN UI
+- Zod
 
-```bash
-# npm
-npm install
+- Armazenamento: localStorage (sem banco de dados)
 
-# pnpm
-pnpm install
+## Como Executar
 
-# yarn
-yarn install
+1. Clone o repositório
+   git clone https://github.com/sembask/book-manager.git
+   cd seu-repositorio
 
-# bun
-bun install
-```
+2. Instale as dependências
+   npm install
 
-## Development Server
+3. Inicie o servidor de desenvolvimento
+   npm run dev
 
-Start the development server on `http://localhost:3000`:
+4. Acesse em
+   http://localhost:3000
 
-```bash
-# npm
-npm run dev
+## Funcionalidades
 
-# pnpm
-pnpm dev
+- Buscar livros via API do Google Books
+- Adicionar livro à lista com avaliação, data de leitura e opinião
+- Validação com Zod
+- Exibição com ordenação por data de início (mais antiga primeiro)
+- Persistência local com localStorage
 
-# yarn
-yarn dev
+---
 
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Este projeto foi desenvolvido para fins de teste técnico.
